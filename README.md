@@ -13,7 +13,10 @@ pip install git+https://github.com/mokos/jquants-python-lib
 2. 環境変数 JQUANTS_REFRESH_TOKEN
 
 ## BaseClient
-```
+APIのデータを取得するためのシンプルなクライアント。
+
+
+```python
 client = jq.BaseClient(refresh_token=YOUR_TOKEN)
 
 # API /listed/info の結果をJSONで取得
@@ -25,15 +28,18 @@ print(client.get_df('/listed/info'))
 ```
 
 ## CacheClient
-CacheClientは、基準日時(base_datetime)以降に取得したキャッシュがあれば、キャッシュから読み込みます。
+キャッシュ機能付きのクライアント。
+　
+- CacheClientがAPIから取得したデータを自動でキャッシュします。
+- 基準日時以降に取得したキャッシュがあれば、キャッシュから読み込みます。
 
-また、CacheClientがAPIから取得したデータを自動でキャッシュします。
 
-キャッシュを保存するディレクトリを cache_dir で指定します。
+base_datetime: 基準日時(これ以降に取得されたキャッシュを利用する)
+cache_dir: キャッシュを保存するディレクトリ
 
 過去の期間の分析を繰り返したい場合などに、base_datetimeを固定すると、データ取得の時間を節約できます。
 
-```
+```python
 import jquantslib as jq
 
 # 基準日時以降に取得したキャッシュを使うクライアントの作成
@@ -51,9 +57,9 @@ print(client.get_df('/listed/info'))
 
 # 未実装
 ## IDトークン期限切れ対応
-できれば24時間固定でなく、返ってくるエラーの種類で判定したい
+できれば24時間固定でなく、返ってくるエラーの種類で判定したい。
 
-現状は、IDトークンが期限切れたらクライアント作り直してください
+現状は、IDトークンが期限切れたらクライアント作り直してください。
 
 
 # 注意事項
