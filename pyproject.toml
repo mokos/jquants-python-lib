@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jquantslib"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["mokos <mokos308@gmail.com>"]
 

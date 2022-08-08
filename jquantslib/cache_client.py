@@ -68,7 +68,20 @@ class CacheClient(BaseClient):
             j = super().get_json(api_path)
             
             # データ取得時刻でキャッシュを作成
-            new_cache_name = cache_name(datetime.datetime.now())
+            now = datetime.datetime.now()
+            get_time = now
+
+            # dateパラメータを持つAPIの場合
+            if '?date=' in api_path:
+                dt = api_path.split('?date=')[-1]
+                dt = datetime.datetime.strptime(dt, '%Y-%m-%d')
+                # 指定日付の24時からある程度経過していれば、もうデータは変わらなさそう
+                elapsed_hours = (now-dt).total_seconds() // (60*60) - 24
+                if elapsed_hours >= 24:
+                    # 二度と同じ日付のデータを取らなくてよくする
+                    get_time = datetime.datetime(9999, 1, 1)
+
+            new_cache_name = cache_name(get_time)
             with open(new_cache_name, 'w') as f:
                 json.dump(j, f)
             return j
