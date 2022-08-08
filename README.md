@@ -15,6 +15,10 @@ pip install git+https://github.com/mokos/jquants-python-lib
 ## BaseClient
 APIのデータを取得するためのシンプルなクライアント。
 
+リフレッシュトークンが設定してあれば、自動でIDトークンを取得してデータを取得できます。
+
+IDトークンが期限切れした場合も自動で再取得します。
+
 
 ```python
 client = jq.BaseClient(refresh_token=YOUR_TOKEN)
@@ -28,7 +32,7 @@ print(client.get_df('/listed/info'))
 ```
 
 ## CacheClient
-キャッシュ機能付きのクライアント。
+BaseClientを継承したキャッシュ機能付きのクライアント。
 　
 - CacheClientがAPIから取得したデータを自動でキャッシュします。
 - 基準日時以降に取得したキャッシュがあれば、キャッシュから読み込みます。
@@ -54,13 +58,6 @@ print(client.get_df('/listed/info'))
 # 二度目はキャッシュを読むので速い
 print(client.get_df('/listed/info'))
 ```
-
-# 未実装
-## IDトークン期限切れ対応
-できれば24時間固定でなく、返ってくるエラーの種類で判定したい。
-
-現状は、IDトークンが期限切れたらクライアント作り直してください。
-
 
 # 注意事項
 JQuants API の利用規約に従って、ご自身の責任にて利用してください。

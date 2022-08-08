@@ -19,9 +19,6 @@ class BaseClient:
     # やらないこと
     - リフレッシュトークンの取得
     - APIから取得したデータの加工(DataFrameにする程度まではやる)
-
-    # 未実装
-    IDトークンの期限切れ対応
     
     '''
     
@@ -37,9 +34,11 @@ class BaseClient:
         self.timeout = timeout
         self.retry_num = retry_num
         self.id_token = None
+
+    def reset_id_token(self):
+        self.id_token = None
         
     def get_id_token(self):
-        # TODO IDトークンの期限切れ対応
         if self.id_token is None:
             url = self.ID_TOKEN_URL.format(refreshtoken=self.refresh_token)
             res = requests.post(url)
@@ -65,8 +64,15 @@ class BaseClient:
     def get_response(self, api_path):
         url = self.BASE_URL + api_path
         session = self.make_session()
-        headers = self.make_headers()
-        res = session.request('GET', url, timeout=self.timeout, headers=headers)
+        res = session.request('GET', url, timeout=self.timeout, headers=self.make_headers())
+
+        # 401エラー(Unauthorized)の場合、IDトークンが期限切れの可能性が高い。
+        # 既存のIDトークンをリセットしてリトライ
+        if res.status_code == 401:
+            print('maybe ID token has expired. reset old ID token.')
+            self.reset_id_token()
+            res = session.request('GET', url, timeout=self.timeout, headers=self.make_headers())
+
         res.raise_for_status()
         return res
     
